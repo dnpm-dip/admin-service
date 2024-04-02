@@ -6,7 +6,7 @@ import de.dnpm.dip.model.Site
 import de.dnpm.dip.service.PeerToPeerRequest
 import play.api.libs.json.{
   Json,
-  JsNull,
+  JsObject,
   OWrites
 }
 
@@ -16,7 +16,7 @@ final case class StatusRequest
 )
 extends PeerToPeerRequest
 {
-  type ResultType = JsNull.type
+  type ResultType = JsObject
 }
 
 

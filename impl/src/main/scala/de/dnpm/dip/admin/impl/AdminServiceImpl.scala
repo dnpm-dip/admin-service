@@ -1,9 +1,14 @@
 package de.dnpm.dip.admin.impl
 
 
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit.SECONDS
 import scala.util.{
   Left,
-  Right
+  Right,
+  Success,
+  Failure
 }
 import scala.concurrent.{
   Future,
@@ -21,7 +26,6 @@ import de.dnpm.dip.connector.{
 import de.dnpm.dip.connector.HttpMethod.GET
 import de.dnpm.dip.admin.api._
 import ConnectionReport.Status._
-
 
 
 class AdminServiceProviderImpl extends AdminServiceProvider
@@ -63,9 +67,51 @@ extends AdminService
 with Logging
 {
 
+  import scala.concurrent.ExecutionContext.Implicits._
+
+
   private val statusRequest =
     StatusRequest(connector.localSite)
 
+  private val executor =
+    Executors.newSingleThreadScheduledExecutor
+
+  private val report =
+    new AtomicReference(ConnectionReport(List.empty))
+
+  // Schedule report compilation every minute
+  executor.scheduleAtFixedRate(() => compileConnectionReport, 0, 60, SECONDS)
+
+
+  private def compileConnectionReport = {
+    log.info("Compiling network connection status report")
+    (connector ! statusRequest)
+      .map(
+        _.map {
+          case (site,result) =>
+            result match {
+              case Right(_)  =>
+                ConnectionReport.Entry(site,Online,"-")
+              case Left(err) =>
+                ConnectionReport.Entry(site,Offline,err)
+            }
+        }
+        .toList
+      )
+      .map(ConnectionReport(_))
+      .onComplete { 
+        case Success(r) => report.set(r)
+        case Failure(t) => log.error("During compilation of network connection status report",t)
+      }
+  }
+
+  override def connectionReport(
+    implicit env: ExecutionContext
+  ): Future[ConnectionReport] =
+    Future.successful(report.get)
+
+
+/*
   override def connectionReport(
     implicit env: ExecutionContext
   ): Future[ConnectionReport] = {
@@ -88,5 +134,5 @@ with Logging
       )
 
   }
-
+*/
 }
