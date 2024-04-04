@@ -71,7 +71,7 @@ with Logging
 
 
   private val statusRequest =
-    StatusRequest(connector.localSite)
+    StatusRequest(Site.local)
 
   private val executor =
     Executors.newSingleThreadScheduledExecutor
@@ -84,7 +84,7 @@ with Logging
 
 
   private def compileConnectionReport = {
-    log.info("Compiling network connection status report")
+    log.debug("Compiling network connection status report")
     (connector ! statusRequest)
       .map(
         _.map {

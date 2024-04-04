@@ -4,6 +4,8 @@ package de.dnpm.dip.admin.impl
 import scala.util.Success
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.must.Matchers._
+import de.dnpm.dip.model.Site
+import de.dnpm.dip.connector.HttpConnector
 import de.dnpm.dip.admin.api.AdminService
 import play.api.libs.json.Json.{
   toJson,
@@ -14,7 +16,9 @@ import play.api.libs.json.Json.{
 class Tests extends AsyncFlatSpec
 {
 
-  System.setProperty("dnpm.dip.connector.type","fake")
+  System.setProperty(Site.property,"UKx:Musterlingen")
+  System.setProperty(HttpConnector.Type.property,"fake")
+
 
   val serviceTry =
     AdminService.getInstance
