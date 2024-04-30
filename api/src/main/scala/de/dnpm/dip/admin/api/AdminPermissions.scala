@@ -5,10 +5,15 @@ import de.dnpm.dip.service.auth._
 
 
 
-object AdminPermissions 
-extends PermissionEnumeration
+object AdminPermissions extends PermissionEnumeration
 {
   val GetConnectionReport = Value
+
+  override val descriptions =
+    Map(
+      GetConnectionReport -> "Status-Bericht Verbindungen zu anderen DNPM-Knoten abrufen/einsehen"
+    )
+
 }
 
 
@@ -20,7 +25,8 @@ object AdminRoles extends Roles
   val Admin =
     Role(
       "Admin",
-      permissions
+      permissions,
+      Some("DNPM-Knoten-Admin")
     )
 
   override val roles: Set[Role] =
