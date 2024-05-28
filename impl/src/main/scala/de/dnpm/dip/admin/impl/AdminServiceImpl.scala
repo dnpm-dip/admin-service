@@ -18,14 +18,17 @@ import cats.Monad
 import de.dnpm.dip.util.Logging
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.model.Site
-import de.dnpm.dip.service.Connector
+import de.dnpm.dip.service.{
+  Connector,
+  ConnectionStatus
+}
 import de.dnpm.dip.connector.{
   FakeConnector,
   HttpConnector
 }
 import de.dnpm.dip.connector.HttpMethod.GET
 import de.dnpm.dip.admin.api._
-import ConnectionReport.Status._
+//import ConnectionReport.Status._
 
 
 class AdminServiceProviderImpl extends AdminServiceProvider
@@ -87,18 +90,11 @@ with Logging
     log.debug("Compiling network connection status report")
     (connector ! statusRequest)
       .map(
-        _.map {
-          case (site,result) =>
-            result match {
-              case Right(_)  =>
-                ConnectionReport.Entry(site,Online,"-")
-              case Left(err) =>
-                ConnectionReport.Entry(site,Offline,err)
-            }
-        }
-        .toList
+        rs =>
+          ConnectionReport(
+            ConnectionStatus.from(rs).toList
+          )
       )
-      .map(ConnectionReport(_))
       .onComplete { 
         case Success(r) => report.set(r)
         case Failure(t) => log.error("During compilation of network connection status report",t)

@@ -7,7 +7,7 @@ import de.dnpm.dip.service.auth._
 
 object AdminPermissions extends PermissionEnumeration
 {
-  val GetConnectionReport = Value
+  val GetConnectionReport = Value("connection_report_read")
 
   override val descriptions =
     Map(
