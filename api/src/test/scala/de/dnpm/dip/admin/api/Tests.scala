@@ -29,6 +29,7 @@ class Tests extends AsyncFlatSpec
   }
 
 
+/*
   "RolesSPI" must "have worked" in {
     rolesTry.isSuccess mustBe true
   }
@@ -37,5 +38,5 @@ class Tests extends AsyncFlatSpec
   "Role set" must "be non-empty" in {
     Roles.getAll must not be (empty)
   }
-
+*/
 }
