@@ -28,7 +28,6 @@ import de.dnpm.dip.connector.{
 }
 import de.dnpm.dip.connector.HttpMethod.GET
 import de.dnpm.dip.admin.api._
-//import ConnectionReport.Status._
 
 
 class AdminServiceProviderImpl extends AdminServiceProvider
@@ -46,7 +45,7 @@ object AdminServiceImpl extends Logging
       case HttpConnector.Type(typ) =>
         HttpConnector(
           typ,
-          "/api/peer2peer",
+          "/api/peer2peer/",
           { case r: StatusRequest => (GET, "status", Map.empty) }
         )
 
