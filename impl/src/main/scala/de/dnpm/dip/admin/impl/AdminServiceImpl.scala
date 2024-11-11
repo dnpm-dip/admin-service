@@ -24,7 +24,8 @@ import de.dnpm.dip.service.{
 }
 import de.dnpm.dip.connector.{
   FakeConnector,
-  HttpConnector
+  HttpConnector,
+  HttpMethod
 }
 import de.dnpm.dip.connector.HttpMethod.GET
 import de.dnpm.dip.admin.api._
@@ -39,14 +40,15 @@ class AdminServiceProviderImpl extends AdminServiceProvider
 
 object AdminServiceImpl extends Logging
 {
+  
+  import HttpMethod._
 
   private val connector =
     System.getProperty("dnpm.dip.connector.type","broker") match {
       case HttpConnector.Type(typ) =>
         HttpConnector(
           typ,
-          "/api/peer2peer/",
-          { case r: StatusRequest => (GET, "status", Map.empty) }
+          { case r: StatusRequest => (GET, "/api/peer2peer/status", Map.empty) }
         )
 
       case _ =>
