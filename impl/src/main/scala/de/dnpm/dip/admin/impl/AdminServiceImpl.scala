@@ -71,12 +71,12 @@ extends AdminService
 with Logging
 {
 
-  import scala.concurrent.ExecutionContext.Implicits._
-
+//  import scala.concurrent.ExecutionContext.Implicits._
 
   private val statusRequest =
     StatusRequest(Site.local)
 
+/*  
   private val executor =
     Executors.newSingleThreadScheduledExecutor
 
@@ -106,30 +106,18 @@ with Logging
     implicit env: ExecutionContext
   ): Future[ConnectionReport] =
     Future.successful(report.get)
+*/
 
 
-/*
   override def connectionReport(
     implicit env: ExecutionContext
-  ): Future[ConnectionReport] = {
-
+  ): Future[ConnectionReport] =
     (connector ! statusRequest)
       .map(
-        _.map {
-          case (site,result) =>
-            result match {
-              case Right(_)  =>
-                ConnectionReport.Entry(site,Online,"-")
-              case Left(err) =>
-                ConnectionReport.Entry(site,Offline,err)
-            }
-        }
-        .toList
-      )
-      .map(
-        ConnectionReport(_)
+        rs =>
+          ConnectionReport(
+            ConnectionStatus.from(rs).toList
+          )
       )
 
-  }
-*/
 }
