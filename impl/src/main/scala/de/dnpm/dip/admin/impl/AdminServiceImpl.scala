@@ -93,7 +93,9 @@ with Logging
       .map(
         rs =>
           ConnectionReport(
-            ConnectionStatus.from(rs).toList
+            ConnectionStatus.from(rs)
+              .toList
+              .sortBy(_.site.display.get)  // call of .get safe here
           )
       )
       .onComplete { 
@@ -116,7 +118,9 @@ with Logging
       .map(
         rs =>
           ConnectionReport(
-            ConnectionStatus.from(rs).toList
+            ConnectionStatus.from(rs)
+              .toList
+              .sortBy(_.site.display.get)  // call of .get safe here
           )
       )
 
