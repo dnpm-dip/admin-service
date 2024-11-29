@@ -2,8 +2,6 @@ package de.dnpm.dip.admin.api
 
 
 import java.time.LocalDateTime
-import de.dnpm.dip.coding.Coding
-import de.dnpm.dip.model.Site
 import de.dnpm.dip.service.ConnectionStatus
 import play.api.libs.json.{
   Json,
