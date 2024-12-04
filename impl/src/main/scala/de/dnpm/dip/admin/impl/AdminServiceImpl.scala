@@ -63,52 +63,56 @@ with Logging
   private val statusRequest =
     StatusRequest(Site.local)
 
-/*  
-  private val executor =
-    Executors.newSingleThreadScheduledExecutor
 
-  private val report =
-    new AtomicReference(ConnectionReport(List.empty))
-
-  // Schedule report compilation every minute
-  executor.scheduleAtFixedRate(() => compileConnectionReport, 0, 60, SECONDS)
-
-
-  private def compileConnectionReport = {
-    log.debug("Compiling network connection status report")
-    (connector ! statusRequest)
-      .map(
-        rs =>
-          ConnectionReport(
-            ConnectionStatus.from(rs)
-              .toList
-              .sortBy(_.site.display.get)  // call of .get safe here
-          )
-      )
-      .onComplete { 
-        case Success(r) => report.set(r)
-        case Failure(t) => log.error("During compilation of network connection status report",t)
-      }
+  import ConnectionStatus.{
+    Online,
+    Offline
   }
 
   override def connectionReport(
     implicit env: ExecutionContext
   ): Future[ConnectionReport] =
-    Future.successful(report.get)
-*/
+    for {
+      self <-
+        (connector ! (statusRequest,Site.local))
+          .map {
+            case Right(_) =>
+              ConnectionStatus(
+                Site.local,
+                Online,
+                None
+              )
 
+            case Left(msg) =>
+              ConnectionStatus(
+                Site.local,
+                Offline,
+                Some(msg)
+              )
+          }
+          .recover {
+            case t =>
+              log.warn("Self-availability check failed, most likely due to connection problem to the broker itself",t)
+              ConnectionStatus(
+                Site.local,
+                Offline,
+                Some(
+"""Self-availability check via broker failed.
+Your site could still be correctly reachable by external peers, but cannot check this itself due to connection problems to the broker.
+Check out the backend logs for details"""
+                )
+              )
+          }
 
-  override def connectionReport(
-    implicit env: ExecutionContext
-  ): Future[ConnectionReport] =
-    (connector ! statusRequest)
-      .map(
-        rs =>
-          ConnectionReport(
-            ConnectionStatus.from(rs)
-              .toList
-              .sortBy(_.site.display.get)  // call of .get safe here
-          )
-      )
+      peers <-
+        (connector ! statusRequest).map(
+           ConnectionStatus.from(_)
+             .toList
+             .sortBy(_.site.display.get)  // call of .get safe here
+        )
+    } yield ConnectionReport(
+      self,
+      peers
+    )
 
 }

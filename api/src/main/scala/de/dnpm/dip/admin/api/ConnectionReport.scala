@@ -12,6 +12,7 @@ import play.api.libs.json.{
 
 final case class ConnectionReport
 (
+  self: ConnectionStatus,
   peers: List[ConnectionStatus],
   createdAt: LocalDateTime = LocalDateTime.now
 )
