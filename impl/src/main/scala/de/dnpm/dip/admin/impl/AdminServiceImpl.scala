@@ -92,13 +92,13 @@ with Logging
           }
           .recover {
             case t =>
-              log.warn("Self-availability check failed, most likely due to connection problem to the broker itself",t)
+              log.warn(s"Self-availability check failed, most likely due to connection problem to the broker itself: ${t.getMessage}")
               ConnectionStatus(
                 Site.local,
                 Offline,
                 Some(
 """Self-availability check via broker failed.
-Your site could still be correctly reachable by external peers, but cannot check this itself due to connection problems to the broker.
+Your local node could still be correctly reachable by external peers, but cannot check this itself due to connection problems to the broker.
 Check out the backend logs for details"""
                 )
               )
