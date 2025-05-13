@@ -3,10 +3,12 @@ package de.dnpm.dip.admin.impl
 
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.model.Site
-import de.dnpm.dip.service.PeerToPeerRequest
+import de.dnpm.dip.service.{
+  PeerToPeerRequest,
+  ConnectionStatus
+}
 import play.api.libs.json.{
   Json,
-  JsObject,
   OWrites
 }
 
@@ -16,7 +18,8 @@ final case class StatusRequest
 )
 extends PeerToPeerRequest
 {
-  type ResultType = JsObject
+//  type ResultType = Status
+  type ResultType = ConnectionStatus
 }
 
 

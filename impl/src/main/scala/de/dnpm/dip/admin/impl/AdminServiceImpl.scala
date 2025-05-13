@@ -7,6 +7,7 @@ import scala.concurrent.{
 }
 import cats.Monad
 import de.dnpm.dip.util.Logging
+import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.model.Site
 import de.dnpm.dip.service.{
   Connector,
@@ -63,11 +64,22 @@ with Logging
   private val statusRequest =
     StatusRequest(Site.local)
 
+  import ConnectionStatus.Offline
 
-  import ConnectionStatus.{
-    Online,
-    Offline
-  }
+  private val SELF_UNAVAILABLE =
+"""Self-availability check via broker failed.
+Your local node could still be correctly reachable by external peers, but cannot check this itself due to connection problems to the broker.
+Check out the backend logs for details."""
+
+
+  private def connectionStatus(
+    site: Coding[Site],
+    result: Either[String,ConnectionStatus]
+  ): ConnectionStatus =
+    result.fold(
+      msg    => ConnectionStatus(site,Offline,Some(msg)),
+      status => status  
+    )
 
   override def connectionReport(
     implicit env: ExecutionContext
@@ -75,40 +87,19 @@ with Logging
     for {
       self <-
         (connector ! (statusRequest,Site.local))
-          .map {
-            case Right(_) =>
-              ConnectionStatus(
-                Site.local,
-                Online,
-                None
-              )
-
-            case Left(msg) =>
-              ConnectionStatus(
-                Site.local,
-                Offline,
-                Some(msg)
-              )
-          }
+          .map(connectionStatus(Site.local,_))
           .recover {
             case t =>
               log.warn(s"Self-availability check failed, most likely due to connection problem to the broker itself: ${t.getMessage}")
-              ConnectionStatus(
-                Site.local,
-                Offline,
-                Some(
-"""Self-availability check via broker failed.
-Your local node could still be correctly reachable by external peers, but cannot check this itself due to connection problems to the broker.
-Check out the backend logs for details"""
-                )
-              )
+              ConnectionStatus(Site.local,Offline,Some(SELF_UNAVAILABLE))
           }
 
       peers <-
         (connector ! statusRequest).map(
-           ConnectionStatus.from(_)
-             .toList
-             .sortBy(_.site.display.get)  // call of .get safe here
+           _.foldLeft(List.empty[ConnectionStatus]){
+             case (acc,(site,result)) => connectionStatus(site,result) :: acc
+           }
+           .sortBy(_.site.display.get)  // call of .get safe here
         )
     } yield ConnectionReport(
       self,
