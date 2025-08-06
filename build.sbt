@@ -1,13 +1,16 @@
+// build.sbt adapted from https://github.com/pbassiner/sbt-multi-project-example/blob/master/build.sbt
 
-/*
- build.sbt adapted from https://github.com/pbassiner/sbt-multi-project-example/blob/master/build.sbt
-*/
+import scala.util.Properties.envOrElse
 
 
 name := "admin-service"
 ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / version      := "1.0-SNAPSHOT"
+ThisBuild / version      := envOrElse("VERSION","1.0.0")
+
+val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/admin-service").split("/")
+ThisBuild / githubOwner      := ownerRepo(0)
+ThisBuild / githubRepository := ownerRepo(1)
 
 
 //-----------------------------------------------------------------------------
@@ -53,9 +56,9 @@ lazy val impl = project
 
 lazy val dependencies =
   new {
-    val scalatest      = "org.scalatest" %% "scalatest"      % "3.2.18"        % Test
-    val service_base   = "de.dnpm.dip"   %% "service-base"   % "1.0-SNAPSHOT"
-    val connector_base = "de.dnpm.dip"   %% "connector-base" % "1.0-SNAPSHOT"
+    val scalatest      = "org.scalatest" %% "scalatest"      % "3.2.18" % Test
+    val service_base   = "de.dnpm.dip"   %% "service-base"   % "1.0.0"
+    val connector_base = "de.dnpm.dip"   %% "connector-base" % "1.0.0"
   }
 
 
@@ -109,17 +112,16 @@ lazy val compilerOptions = Seq(
   "-Wunused:privates",
   "-Wunused:implicits",
   "-Wvalue-discard",
-
-  // Deactivated to avoid many false positives from 'evidence' parameters in context bounds
-//  "-Wunused:params",
 )
 
 
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions,
-  resolvers ++=
-    Seq("Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository") ++
-    Resolver.sonatypeOssRepos("releases") ++
-    Resolver.sonatypeOssRepos("snapshots")
+  resolvers ++= Seq(
+    "Local Maven Repository" at "file://" + Path.userHome.absolutePath + "/.m2/repository",
+    Resolver.githubPackages("dnpm-dip"),
+    Resolver.githubPackages("KohlbacherLab"),
+    Resolver.sonatypeCentralSnapshots
+  )
 )
 
