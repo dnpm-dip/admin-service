@@ -124,4 +124,3 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeCentralSnapshots
   )
 )
-
