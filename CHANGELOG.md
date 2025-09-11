@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/dnpm-dip/admin-service/compare/v1.0.0...v1.0.1) (2025-09-11)
+
+
+### Bug Fixes
+
+* Adapted ConnectionReport compilation to run in parallel instead of sequentially ([f936c83](https://github.com/dnpm-dip/admin-service/commit/f936c83d31d87d79ff82631ed8651a6d38b24def))
+
 ## 1.0.0 (2025-08-06)
 
 
