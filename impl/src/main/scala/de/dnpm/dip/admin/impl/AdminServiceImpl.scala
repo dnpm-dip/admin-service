@@ -6,6 +6,7 @@ import scala.concurrent.{
   ExecutionContext
 }
 import cats.Monad
+import cats.syntax.apply._
 import de.dnpm.dip.util.Logging
 import de.dnpm.dip.coding.Coding
 import de.dnpm.dip.model.Site
@@ -81,29 +82,36 @@ Check out the backend logs for details."""
       status => status  
     )
 
+
   override def connectionReport(
     implicit env: ExecutionContext
-  ): Future[ConnectionReport] =
-    for {
-      self <-
-        (connector ! (statusRequest,Site.local))
-          .map(connectionStatus(Site.local,_))
-          .recover {
-            case t =>
-              log.warn(s"Self-availability check failed, most likely due to connection problem to the broker itself: ${t.getMessage}")
-              ConnectionStatus(Site.local,Offline,Some(SELF_UNAVAILABLE))
-          }
+  ): Future[ConnectionReport] = {
 
-      peers <-
-        (connector ! statusRequest).map(
-           _.foldLeft(List.empty[ConnectionStatus]){
-             case (acc,(site,result)) => connectionStatus(site,result) :: acc
-           }
-           .sortBy(_.site.display.get)  // call of .get safe here
-        )
-    } yield ConnectionReport(
-      self,
-      peers
+    val selfAvailability =
+      (connector ! (statusRequest,Site.local))
+        .map(connectionStatus(Site.local,_))
+        .recover {
+          case t =>
+            log.warn(s"Self-availability check failed, most likely due to connection problem to the broker itself: ${t.getMessage}")
+            ConnectionStatus(Site.local,Offline,Some(SELF_UNAVAILABLE))
+        }
+
+    val peerAvailability =
+      (connector ! statusRequest).map(
+        _.foldLeft(List.empty[ConnectionStatus]){
+          case (acc,(site,result)) => connectionStatus(site,result) :: acc
+        }
+        .sortBy(_.site.display.get)  // call of .get safe here
+      )
+
+    (
+      selfAvailability,
+      peerAvailability
     )
+    .mapN(
+      (self,peers) => ConnectionReport(self,peers)
+    )
+
+  }
 
 }
