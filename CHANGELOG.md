@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/dnpm-dip/admin-service/compare/v1.0.1...v1.1.0) (2025-10-10)
+
+
+### Features
+
+* Upgraded dependency versions ([025b512](https://github.com/dnpm-dip/admin-service/commit/025b512d3b8ab2a637a8185137291974a413921b))
+
 ## [1.0.1](https://github.com/dnpm-dip/admin-service/compare/v1.0.0...v1.0.1) (2025-09-11)
 
 
