@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/dnpm-dip/admin-service/compare/v1.1.1...v1.1.2) (2026-05-11)
+
+
+### Bug Fixes
+
+* Bump service-base to 1.3.1 and connector-base to 1.1.2 ([39902cd](https://github.com/dnpm-dip/admin-service/commit/39902cdd0b403c47eef359b45fcf92eadf735dcb))
+
 ## [1.1.1](https://github.com/dnpm-dip/admin-service/compare/v1.1.0...v1.1.1) (2025-11-19)
 
 
