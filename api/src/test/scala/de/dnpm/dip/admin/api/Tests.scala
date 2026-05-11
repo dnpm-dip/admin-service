@@ -1,6 +1,7 @@
 package de.dnpm.dip.admin.api
 
 
+import scala.util.Try
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.must.Matchers._
 import de.dnpm.dip.service.auth.{
@@ -29,14 +30,34 @@ class Tests extends AsyncFlatSpec
   }
 
 
-/*
-  "RolesSPI" must "have worked" in {
-    rolesTry.isSuccess mustBe true
+  "Version parsing" must "have worked correctly" in { 
+
+    val versions =
+      List(
+        "1.0.0",
+        "2.0.1",
+        "1.0.0-SNAPSHOT",
+        "1.0.0-RC",
+      )
+
+    versions.map(Version(_))
+
+    succeed
   }
 
 
-  "Role set" must "be non-empty" in {
-    Roles.getAll must not be (empty)
+  it must "have failed" in { 
+
+    val versions =
+      List(
+        "1.a.0",
+        "a.b.c",
+        "v1.0",
+        "alpha",
+      )
+
+    all (versions.map(v => Try(Version(v)).isSuccess)) mustBe false
+
   }
-*/
+
 }

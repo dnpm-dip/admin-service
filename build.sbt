@@ -5,7 +5,7 @@ import scala.util.Properties.envOrElse
 
 name := "admin-service"
 ThisBuild / organization := "de.dnpm.dip"
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / version      := envOrElse("VERSION","1.1.1")
 
 val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/admin-service").split("/")
@@ -57,8 +57,8 @@ lazy val impl = project
 lazy val dependencies =
   new {
     val scalatest      = "org.scalatest" %% "scalatest"      % "3.2.18" % Test
-    val service_base   = "de.dnpm.dip"   %% "service-base"   % "1.2.0"
-    val connector_base = "de.dnpm.dip"   %% "connector-base" % "1.1.1"
+    val service_base   = "de.dnpm.dip"   %% "service-base"   % "1.3.1"
+    val connector_base = "de.dnpm.dip"   %% "connector-base" % "1.1.2"
   }
 
 
