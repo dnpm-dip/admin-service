@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/dnpm-dip/admin-service/compare/v1.1.3...v1.1.4) (2026-10-21)
+
+
+### Bug Fixes
+
+* bump dependencies ([505684d](https://github.com/dnpm-dip/admin-service/commit/505684d7f756a58b50dbc76c46ed3ea71eea0873))
+
 ## [1.1.3](https://github.com/dnpm-dip/admin-service/compare/v1.1.2...v1.1.3) (2026-08-12)
 
 
